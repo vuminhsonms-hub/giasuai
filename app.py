@@ -88,19 +88,33 @@ with tabs[0]:
             st.session_state.history.append(question)
 
             answer = ask_ai([
-                {
-                    "role": "system",
-                    "content": """
-                    Bạn là gia sư vật lí.
-                    Nếu có công thức:
-                    - Viết dạng $...$
-                    - Không dùng \\( \\) hoặc [ ]
-                    """
-                },
-                {"role": "user","content": question}
-            ])
+    {
+        "role": "system",
+        "content": """
+        Bạn là gia sư vật lí.
 
-            st.markdown(answer)
+        QUY TẮC BẮT BUỘC:
+        - Mọi công thức phải viết dạng $...$
+        - Không dùng:
+          + [ ]
+          + \\( \\)
+          + \\[ \\]
+
+        Ví dụ đúng:
+        $A = F \\cdot d \\cdot \\cos(\\theta)$
+
+        Nếu sai format → câu trả lời bị coi là sai.
+        """
+    },
+    {"role":"user","content":prompt}
+])
+
+            def fix_latex(text):
+    text = text.replace("[", "$").replace("]", "$")
+    return text
+
+            
+           st.markdown(fix_latex(answer))
 
 # ========================
 # TAB 2: GIẢI BÀI
