@@ -15,11 +15,11 @@ st.set_page_config(page_title="Gia sư Vật lí AI PRO", layout="wide")
 # ========================
 api_key = os.getenv("OPENAI_API_KEY")
 
-if not api_key:
-    st.error("⚠️ Chưa thiết lập OPENAI_API_KEY")
-    st.stop()
-
-client = OpenAI(api_key=api_key)
+client = None
+if api_key:
+    client = OpenAI(api_key=api_key)
+else:
+    st.warning("⚠️ Chưa có API key → AI sẽ không hoạt động")
 
 # ========================
 # STYLE
@@ -50,6 +50,9 @@ if "history" not in st.session_state:
 # SAFE CALL FUNCTION
 # ========================
 def ask_ai(messages):
+    if client is None:
+        return "⚠️ Chưa cấu hình API key"
+
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -58,7 +61,6 @@ def ask_ai(messages):
         return response.choices[0].message.content
     except Exception as e:
         return f"❌ Lỗi API: {str(e)}"
-
 # ========================
 # TABS
 # ========================
