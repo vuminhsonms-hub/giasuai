@@ -110,8 +110,8 @@ with tabs[0]:
 ])
 
             def fix_latex(text):
-    text = text.replace("[", "$").replace("]", "$")
-    return text
+                text = text.replace("[", "$").replace("]", "$")
+                return text
 
             
            st.markdown(fix_latex(answer))
