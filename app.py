@@ -157,62 +157,42 @@ with tabs[2]:
         if topic:
             prompt = f"""
             Tạo {number} câu trắc nghiệm vật lí về {topic}.
-            Trả về JSON:
+
+            CHỈ trả về JSON, KHÔNG giải thích, KHÔNG markdown.
+
+            Ví dụ:
             [
               {{
-                "question": "...",
+                "question": "Câu hỏi?",
                 "A": "...",
                 "B": "...",
                 "C": "...",
                 "D": "...",
                 "answer": "A",
-                "explain": "..."
+                "explain": "giải thích"
               }}
             ]
             """
 
             result = ask_ai([{"role":"user","content":prompt}])
 
+            # DEBUG (rất quan trọng)
+            st.write("📄 Raw AI response:", result)
+
             try:
-                data = json.loads(result)
+                # lọc JSON nếu AI thêm text
+                start = result.find("[")
+                end = result.rfind("]") + 1
+                clean_json = result[start:end]
+
+                data = json.loads(clean_json)
+
                 st.session_state.quiz = data
                 st.session_state.user_answers = {}
-            except:
-                st.error("AI trả dữ liệu lỗi → thử lại!")
 
-    if "quiz" in st.session_state:
-        quiz = st.session_state.quiz
-
-        for i, q in enumerate(quiz):
-            st.write(f"### Câu {i+1}: {q['question']}")
-
-            choice = st.radio(
-                "Chọn đáp án:",
-                ["A", "B", "C", "D"],
-                key=f"q{i}"
-            )
-
-            st.session_state.user_answers[i] = choice
-
-            st.write(f"A. {q['A']}")
-            st.write(f"B. {q['B']}")
-            st.write(f"C. {q['C']}")
-            st.write(f"D. {q['D']}")
-
-        if st.button("Nộp bài"):
-            score = 0
-
-            for i, q in enumerate(quiz):
-                if st.session_state.user_answers.get(i) == q["answer"]:
-                    score += 1
-
-            st.success(f"🎯 Điểm: {score}/{len(quiz)}")
-
-            for i, q in enumerate(quiz):
-                st.write("---")
-                st.write(f"**Câu {i+1}**")
-                st.write(f"Đáp án đúng: {q['answer']}")
-                st.write(f"Giải thích: {q['explain']}")
+            except Exception as e:
+                st.error("❌ Lỗi đọc JSON")
+                st.write(e)
 
 # ========================
 # TAB 4: PHÒNG THÍ NGHIỆM AI
