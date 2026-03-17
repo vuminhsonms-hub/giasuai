@@ -4,8 +4,12 @@ import matplotlib.pyplot as plt
 from scipy.stats import linregress
 from openai import OpenAI
 import os
-from openai import OpenAI
+import json
+import re
 
+# ========================
+# API KEY
+# ========================
 api_key = os.getenv("OPENAI_API_KEY")
 
 client = None
@@ -13,6 +17,11 @@ if api_key:
     client = OpenAI(api_key=api_key)
 else:
     st.warning("⚠️ Chưa có API key → AI sẽ không hoạt động")
+
+# ========================
+# CONFIG
+# ========================
+st.set_page_config(page_title="Gia sư Vật lí AI PRO", layout="wide")
 
 # ========================
 # STYLE
@@ -30,8 +39,8 @@ st.markdown("""
 # ========================
 # TITLE
 # ========================
-st.title("🔬 Gia sư Vật lí AI PRO")
-st.write("Hệ thống học tập Vật lí thông minh dành cho học sinh THPT")
+st.title("🔬 Gia sư Vật lí AI – Hỗ trợ học tập và thí nghiệm Vật lí thông minh")
+st.write("Hệ thống học tập + phòng thí nghiệm Vật lí AI dành cho học sinh THPT")
 
 # ========================
 # MEMORY
@@ -40,7 +49,7 @@ if "history" not in st.session_state:
     st.session_state.history = []
 
 # ========================
-# SAFE CALL FUNCTION
+# AI FUNCTION
 # ========================
 def ask_ai(messages):
     if client is None:
@@ -54,6 +63,18 @@ def ask_ai(messages):
         return response.choices[0].message.content
     except Exception as e:
         return f"❌ Lỗi API: {str(e)}"
+
+# ========================
+# LATEX RENDER FIX
+# ========================
+def render_latex(text):
+    parts = re.split(r'(\$.*?\$)', text)
+    for part in parts:
+        if part.startswith("$") and part.endswith("$"):
+            st.latex(part.strip("$"))
+        else:
+            st.write(part)
+
 # ========================
 # TABS
 # ========================
@@ -61,7 +82,7 @@ tabs = st.tabs([
     "🤖 Hỏi đáp",
     "🧠 Giải bài",
     "📝 Trắc nghiệm",
-    "📊 Thí nghiệm",
+    "🔬 Phòng thí nghiệm AI",
     "🧪 Mô phỏng",
     "📝 Chấm bài",
     "📚 Công thức",
@@ -79,11 +100,11 @@ with tabs[0]:
             st.session_state.history.append(question)
 
             answer = ask_ai([
-                {"role": "system","content": "Bạn là gia sư vật lí THPT, giải thích dễ hiểu, có ví dụ."},
+                {"role": "system","content": "Bạn là gia sư vật lí THPT, giải thích dễ hiểu, có ví dụ, dùng LaTeX khi cần."},
                 {"role": "user","content": question}
             ])
 
-            st.write(answer)
+            render_latex(answer)
 
 # ========================
 # TAB 2: GIẢI BÀI
@@ -102,47 +123,102 @@ with tabs[1]:
         prompt = f"Giải bước đầu tiên của bài vật lí, dừng sau bước 1: {problem}"
 
     if col3.button("✅ Giải đầy đủ"):
-        prompt = f"Giải bài vật lí từng bước chi tiết: {problem}"
+        prompt = f"Giải bài vật lí từng bước chi tiết, có công thức LaTeX: {problem}"
 
     if prompt and problem:
         st.session_state.history.append(problem)
 
         answer = ask_ai([
-            {"role":"system","content":"Bạn là gia sư vật lí, hướng dẫn học sinh tư duy."},
+            {"role":"system","content":"Bạn là gia sư vật lí, hướng dẫn học sinh tư duy rõ ràng."},
             {"role":"user","content":prompt}
         ])
 
-        st.write(answer)
+        render_latex(answer)
 
 # ========================
-# TAB 3: TRẮC NGHIỆM
+# TAB 3: TRẮC NGHIỆM (FULL)
 # ========================
 with tabs[2]:
     topic = st.text_input("Chủ đề")
     number = st.slider("Số câu",1,10,5)
 
-    if st.button("Tạo câu hỏi"):
+    if st.button("Tạo đề"):
         if topic:
             prompt = f"""
             Tạo {number} câu trắc nghiệm vật lí về {topic}.
-            Có 4 đáp án A B C D.
-            Ghi rõ đáp án đúng.
+            Trả về JSON:
+            [
+              {{
+                "question": "...",
+                "A": "...",
+                "B": "...",
+                "C": "...",
+                "D": "...",
+                "answer": "A",
+                "explain": "..."
+              }}
+            ]
             """
 
-            answer = ask_ai([
-                {"role":"user","content":prompt}
-            ])
+            result = ask_ai([{"role":"user","content":prompt}])
 
-            st.write(answer)
+            try:
+                data = json.loads(result)
+                st.session_state.quiz = data
+                st.session_state.user_answers = {}
+            except:
+                st.error("AI trả dữ liệu lỗi → thử lại!")
+
+    if "quiz" in st.session_state:
+        quiz = st.session_state.quiz
+
+        for i, q in enumerate(quiz):
+            st.write(f"### Câu {i+1}: {q['question']}")
+
+            choice = st.radio(
+                "Chọn đáp án:",
+                ["A", "B", "C", "D"],
+                key=f"q{i}"
+            )
+
+            st.session_state.user_answers[i] = choice
+
+            st.write(f"A. {q['A']}")
+            st.write(f"B. {q['B']}")
+            st.write(f"C. {q['C']}")
+            st.write(f"D. {q['D']}")
+
+        if st.button("Nộp bài"):
+            score = 0
+
+            for i, q in enumerate(quiz):
+                if st.session_state.user_answers.get(i) == q["answer"]:
+                    score += 1
+
+            st.success(f"🎯 Điểm: {score}/{len(quiz)}")
+
+            for i, q in enumerate(quiz):
+                st.write("---")
+                st.write(f"**Câu {i+1}**")
+                st.write(f"Đáp án đúng: {q['answer']}")
+                st.write(f"Giải thích: {q['explain']}")
 
 # ========================
-# TAB 4: THÍ NGHIỆM
+# TAB 4: PHÒNG THÍ NGHIỆM AI
 # ========================
 with tabs[3]:
-    x_input = st.text_input("Nhập X (cách nhau bởi dấu cách)")
-    y_input = st.text_input("Nhập Y")
+    st.subheader("🔬 Phòng thí nghiệm Vật lí AI")
 
-    if st.button("Phân tích"):
+    exp_type = st.selectbox("Chọn thí nghiệm", [
+        "Định luật Ohm",
+        "Rơi tự do",
+        "Dao động điều hòa"
+    ])
+
+    x_input = st.text_input("Dữ liệu X")
+    y_input = st.text_input("Dữ liệu Y")
+
+    if st.button("Phân tích thông minh"):
         try:
             x = np.array(list(map(float,x_input.split())))
             y = np.array(list(map(float,y_input.split())))
@@ -154,22 +230,24 @@ with tabs[3]:
             ax.plot(x, slope*x + intercept)
             st.pyplot(fig)
 
-            st.write("Hệ số góc:", round(slope,3))
-            st.write("R:", round(r,3))
-            st.latex(f"y={slope:.2f}x+{intercept:.2f}")
+            st.write(f"Hệ số góc: {slope:.3f}")
+            st.write(f"R: {r:.3f}")
 
-            if st.button("Giải thích kết quả"):
-                prompt = f"""
-                Phương trình: y = {slope:.2f}x + {intercept:.2f}
-                R = {r:.2f}
-                Hãy giải thích ý nghĩa vật lí.
-                """
+            prompt = f"""
+            Thí nghiệm {exp_type}
+            slope = {slope}
+            R = {r}
 
-                answer = ask_ai([
-                    {"role":"user","content":prompt}
-                ])
+            Hãy:
+            - Nhận xét
+            - Kết luận vật lí
+            - Sai số
+            """
 
-                st.write(answer)
+            answer = ask_ai([{"role":"user","content":prompt}])
+
+            st.write("### 🤖 Nhận xét AI")
+            render_latex(answer)
 
         except:
             st.error("Dữ liệu không hợp lệ!")
@@ -203,15 +281,13 @@ with tabs[5]:
             Đáp án: {correct_answer}
 
             1. Chấm điểm /10
-            2. Chỉ ra lỗi sai
+            2. Lỗi sai
             3. Gợi ý cải thiện
             """
 
-            answer = ask_ai([
-                {"role":"user","content":prompt}
-            ])
+            answer = ask_ai([{"role":"user","content":prompt}])
 
-            st.write(answer)
+            render_latex(answer)
 
 # ========================
 # TAB 7: CÔNG THỨC
