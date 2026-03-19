@@ -652,6 +652,212 @@ with colD:
 
 st.write("")
 
+
+
+# ========================
+# FORMULA DATA
+# ========================
+FORMULA_DATA = [
+    {
+        "name": "Chuyển động thẳng biến đổi đều - vận tốc",
+        "chapter": "Cơ học",
+        "grade": "10",
+        "formula_latex": r"v = v_0 + at",
+        "formula_text": "v = v0 + a*t",
+        "variables": {
+            "v": "vận tốc tại thời điểm t (m/s)",
+            "v0": "vận tốc ban đầu (m/s)",
+            "a": "gia tốc (m/s²)",
+            "t": "thời gian (s)"
+        },
+        "meaning": "Công thức tính vận tốc của vật chuyển động thẳng biến đổi đều sau thời gian t.",
+        "conditions": "Dùng khi gia tốc không đổi.",
+        "mistakes": [
+            "Nhầm giữa v và v0",
+            "Quên đổi đơn vị thời gian về giây",
+            "Dùng cho chuyển động không có gia tốc không đổi"
+        ],
+        "example": "Một vật có v0 = 2 m/s, a = 3 m/s², sau 4 s thì v = 2 + 3×4 = 14 m/s.",
+        "keywords": ["vận tốc", "gia tốc", "chuyển động thẳng", "nhanh dần", "chậm dần"]
+    },
+    {
+        "name": "Chuyển động thẳng biến đổi đều - quãng đường",
+        "chapter": "Cơ học",
+        "grade": "10",
+        "formula_latex": r"s = v_0 t + \frac{1}{2} a t^2",
+        "formula_text": "s = v0*t + 0.5*a*t^2",
+        "variables": {
+            "s": "quãng đường đi được (m)",
+            "v0": "vận tốc ban đầu (m/s)",
+            "a": "gia tốc (m/s²)",
+            "t": "thời gian (s)"
+        },
+        "meaning": "Tính quãng đường của chuyển động thẳng biến đổi đều.",
+        "conditions": "Gia tốc không đổi.",
+        "mistakes": [
+            "Quên bình phương thời gian",
+            "Nhầm công thức với s = vt",
+            "Không xét dấu của a khi chậm dần"
+        ],
+        "example": "v0 = 2 m/s, a = 1 m/s², t = 4 s → s = 2×4 + 0.5×1×16 = 16 m.",
+        "keywords": ["quãng đường", "thời gian", "gia tốc", "chuyển động"]
+    },
+    {
+        "name": "Định luật II Newton",
+        "chapter": "Cơ học",
+        "grade": "10",
+        "formula_latex": r"F = ma",
+        "formula_text": "F = m*a",
+        "variables": {
+            "F": "hợp lực tác dụng lên vật (N)",
+            "m": "khối lượng (kg)",
+            "a": "gia tốc (m/s²)"
+        },
+        "meaning": "Gia tốc của vật cùng hướng với hợp lực và tỉ lệ thuận với hợp lực, tỉ lệ nghịch với khối lượng.",
+        "conditions": "Áp dụng khi xét hợp lực tác dụng lên vật.",
+        "mistakes": [
+            "Dùng một lực thành phần thay vì hợp lực",
+            "Nhầm khối lượng với trọng lượng",
+            "Sai đơn vị của lực"
+        ],
+        "example": "m = 2 kg, F = 10 N → a = F/m = 5 m/s².",
+        "keywords": ["lực", "gia tốc", "khối lượng", "newton"]
+    },
+    {
+        "name": "Công cơ học",
+        "chapter": "Cơ học",
+        "grade": "10",
+        "formula_latex": r"A = F s",
+        "formula_text": "A = F*s",
+        "variables": {
+            "A": "công cơ học (J)",
+            "F": "lực tác dụng (N)",
+            "s": "quãng đường vật dịch chuyển (m)"
+        },
+        "meaning": "Tính công của lực khi lực cùng hướng chuyển dời.",
+        "conditions": "Dạng đơn giản khi lực cùng phương với chuyển động.",
+        "mistakes": [
+            "Nhầm công với công suất",
+            "Dùng khi lực vuông góc chuyển động mà vẫn lấy A = Fs",
+            "Sai đơn vị J"
+        ],
+        "example": "F = 20 N, s = 3 m → A = 60 J.",
+        "keywords": ["công", "lực", "quãng đường", "jun"]
+    },
+    {
+        "name": "Công suất",
+        "chapter": "Cơ học",
+        "grade": "10",
+        "formula_latex": r"P = \frac{A}{t}",
+        "formula_text": "P = A/t",
+        "variables": {
+            "P": "công suất (W)",
+            "A": "công thực hiện (J)",
+            "t": "thời gian (s)"
+        },
+        "meaning": "Công suất là tốc độ thực hiện công.",
+        "conditions": "Áp dụng khi biết công và thời gian.",
+        "mistakes": [
+            "Nhầm với công cơ học",
+            "Quên đổi phút sang giây",
+            "Nhầm đơn vị W và J"
+        ],
+        "example": "A = 600 J, t = 20 s → P = 30 W.",
+        "keywords": ["công suất", "công", "thời gian", "oát"]
+    },
+    {
+        "name": "Định luật Ôm",
+        "chapter": "Điện học",
+        "grade": "11",
+        "formula_latex": r"I = \frac{U}{R}",
+        "formula_text": "I = U/R",
+        "variables": {
+            "I": "cường độ dòng điện (A)",
+            "U": "hiệu điện thế (V)",
+            "R": "điện trở (Ω)"
+        },
+        "meaning": "Cường độ dòng điện qua dây dẫn tỉ lệ thuận với hiệu điện thế và tỉ lệ nghịch với điện trở.",
+        "conditions": "Áp dụng cho vật dẫn tuân theo định luật Ôm ở nhiệt độ không đổi.",
+        "mistakes": [
+            "Nhầm R = I/U",
+            "Quên đơn vị Ω",
+            "Dùng sai cho bài toàn mạch phức tạp mà chưa tính điện trở tương đương"
+        ],
+        "example": "U = 12 V, R = 4 Ω → I = 3 A.",
+        "keywords": ["điện", "dòng điện", "hiệu điện thế", "điện trở", "ohm"]
+    },
+    {
+        "name": "Điện năng tiêu thụ",
+        "chapter": "Điện học",
+        "grade": "11",
+        "formula_latex": r"A = UIt",
+        "formula_text": "A = U*I*t",
+        "variables": {
+            "A": "điện năng tiêu thụ (J)",
+            "U": "hiệu điện thế (V)",
+            "I": "cường độ dòng điện (A)",
+            "t": "thời gian (s)"
+        },
+        "meaning": "Tính điện năng tiêu thụ của dòng điện.",
+        "conditions": "Áp dụng khi biết U, I và t.",
+        "mistakes": [
+            "Nhầm với công suất",
+            "Không đổi giờ ra giây",
+            "Quên đơn vị J hoặc kWh"
+        ],
+        "example": "U = 220 V, I = 2 A, t = 10 s → A = 4400 J.",
+        "keywords": ["điện năng", "điện", "công của dòng điện", "UI t"]
+    },
+    {
+        "name": "Nhiệt lượng",
+        "chapter": "Nhiệt học",
+        "grade": "10",
+        "formula_latex": r"Q = mc\Delta t",
+        "formula_text": "Q = m*c*Δt",
+        "variables": {
+            "Q": "nhiệt lượng (J)",
+            "m": "khối lượng (kg)",
+            "c": "nhiệt dung riêng (J/kg.K)",
+            "Δt": "độ biến thiên nhiệt độ"
+        },
+        "meaning": "Tính nhiệt lượng thu vào hoặc tỏa ra của vật.",
+        "conditions": "Áp dụng khi vật thay đổi nhiệt độ mà không chuyển thể.",
+        "mistakes": [
+            "Nhầm Δt với nhiệt độ cuối",
+            "Quên đơn vị của c",
+            "Dùng khi có chuyển thể"
+        ],
+        "example": "m = 2 kg, c = 4200, Δt = 5 → Q = 42000 J.",
+        "keywords": ["nhiệt lượng", "nhiệt dung riêng", "nhiệt học"]
+    },
+    {
+        "name": "Con lắc đơn",
+        "chapter": "Dao động",
+        "grade": "12",
+        "formula_latex": r"T = 2\pi \sqrt{\frac{l}{g}}",
+        "formula_text": "T = 2*pi*sqrt(l/g)",
+        "variables": {
+            "T": "chu kỳ (s)",
+            "l": "chiều dài con lắc (m)",
+            "g": "gia tốc trọng trường (m/s²)"
+        },
+        "meaning": "Tính chu kỳ dao động nhỏ của con lắc đơn.",
+        "conditions": "Biên độ nhỏ, bỏ qua ma sát.",
+        "mistakes": [
+            "Nhầm chữ l với số 1",
+            "Không đổi cm sang m",
+            "Dùng cho dao động biên độ lớn"
+        ],
+        "example": "l = 1 m, g = 9.8 → T ≈ 2.01 s.",
+        "keywords": ["con lắc", "chu kỳ", "dao động", "chiều dài"]
+    }
+]
+
+
+
+
+
+
 # ========================
 # TABS
 # ========================
@@ -1447,23 +1653,248 @@ Bài làm học sinh:
     else:
         st.caption("Nhập bài làm, đáp án rồi bấm “Chấm bài ngay” để xem kết quả.")
 # ========================
-# TAB 6: CÔNG THỨC
+# TAB 7: CÔNG THỨC THÔNG MINH
 # ========================
 with tabs[5]:
-    st.markdown('<div class="section-card">', unsafe_allow_html=True)
-    st.subheader("📚 Một số công thức Vật lí cơ bản")
-    c1, c2 = st.columns(2)
-    with c1:
-        st.latex("v = v_0 + at")
-        st.latex("s = v_0 t + \\frac{1}{2}at^2")
-        st.latex("I = \\frac{U}{R}")
-        st.latex("v = \\frac{s}{t}")
-    with c2:
-        st.latex("T = 2\\pi\\sqrt{\\frac{l}{g}}")
-        st.latex("F = BIL")
-        st.latex("pV = const")
-        st.latex("\\bar{x} = \\frac{x_1+x_2+\\cdots+x_n}{n}")
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.subheader("📚 Trung tâm công thức Vật lí")
+
+    mode = st.radio(
+        "Chọn chế độ",
+        [
+            "Tra cứu công thức",
+            "Giải thích công thức",
+            "Rút biến / biến đổi",
+            "Tìm công thức theo bài toán"
+        ],
+        horizontal=True
+    )
+
+    st.write("")
+
+    # ------------------------
+    # 1. TRA CỨU CÔNG THỨC
+    # ------------------------
+    if mode == "Tra cứu công thức":
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            keyword = st.text_input("🔎 Tìm theo từ khóa", placeholder="Ví dụ: điện trở, công suất, gia tốc")
+
+        with col2:
+            chapter_filter = st.selectbox(
+                "📂 Chọn chương",
+                ["Tất cả"] + sorted(list(set(item["chapter"] for item in FORMULA_DATA)))
+            )
+
+        with col3:
+            grade_filter = st.selectbox(
+                "🎓 Chọn lớp",
+                ["Tất cả"] + sorted(list(set(item["grade"] for item in FORMULA_DATA)))
+            )
+
+        filtered = []
+        for item in FORMULA_DATA:
+            ok_keyword = True
+            if keyword.strip():
+                text_blob = " ".join([
+                    item["name"],
+                    item["chapter"],
+                    item["meaning"],
+                    " ".join(item["keywords"])
+                ]).lower()
+                ok_keyword = keyword.lower() in text_blob
+
+            ok_chapter = (chapter_filter == "Tất cả" or item["chapter"] == chapter_filter)
+            ok_grade = (grade_filter == "Tất cả" or item["grade"] == grade_filter)
+
+            if ok_keyword and ok_chapter and ok_grade:
+                filtered.append(item)
+
+        st.markdown(f"### Kết quả: {len(filtered)} công thức")
+
+        if filtered:
+            names = [f"{item['name']} ({item['chapter']} - Lớp {item['grade']})" for item in filtered]
+            selected_label = st.selectbox("Chọn công thức để xem chi tiết", names)
+            selected_index = names.index(selected_label)
+            formula = filtered[selected_index]
+
+            st.markdown("### 🧾 Thông tin công thức")
+            st.latex(formula["formula_latex"])
+
+            c1, c2 = st.columns([1.3, 1])
+
+            with c1:
+                st.markdown(f"**Tên công thức:** {formula['name']}")
+                st.markdown(f"**Chương:** {formula['chapter']}")
+                st.markdown(f"**Lớp:** {formula['grade']}")
+                st.markdown(f"**Ý nghĩa:** {formula['meaning']}")
+                st.markdown(f"**Điều kiện áp dụng:** {formula['conditions']}")
+
+            with c2:
+                st.markdown("**Các đại lượng:**")
+                for var_name, var_meaning in formula["variables"].items():
+                    st.write(f"- {var_name}: {var_meaning}")
+
+            with st.expander("⚠️ Lỗi thường gặp", expanded=True):
+                for mistake in formula["mistakes"]:
+                    st.warning(mistake)
+
+            with st.expander("✅ Ví dụ minh họa", expanded=True):
+                st.info(formula["example"])
+
+        else:
+            st.info("Chưa tìm thấy công thức phù hợp.")
+
+    # ------------------------
+    # 2. GIẢI THÍCH CÔNG THỨC
+    # ------------------------
+    elif mode == "Giải thích công thức":
+        formula_names = [item["name"] for item in FORMULA_DATA]
+        selected_name = st.selectbox("Chọn công thức", formula_names)
+
+        formula = next(item for item in FORMULA_DATA if item["name"] == selected_name)
+
+        st.latex(formula["formula_latex"])
+        st.markdown(f"### {formula['name']}")
+        st.write(formula["meaning"])
+
+        st.markdown("#### 📌 Các đại lượng")
+        for var_name, var_meaning in formula["variables"].items():
+            st.write(f"- **{var_name}**: {var_meaning}")
+
+        st.markdown("#### 📎 Điều kiện áp dụng")
+        st.info(formula["conditions"])
+
+        st.markdown("#### ⚠️ Những nhầm lẫn phổ biến")
+        for mistake in formula["mistakes"]:
+            st.error(mistake)
+
+        st.markdown("#### 🧪 Ví dụ nhanh")
+        st.success(formula["example"])
+
+        if st.button("🤖 AI giải thích dễ hiểu hơn", key="explain_formula_ai"):
+            prompt = f"""
+            Hãy giải thích công thức vật lí sau cho học sinh THPT một cách dễ hiểu:
+            Tên công thức: {formula['name']}
+            Công thức: {formula['formula_text']}
+            Ý nghĩa hiện có: {formula['meaning']}
+            Điều kiện áp dụng: {formula['conditions']}
+
+            Yêu cầu:
+            - Giải thích đơn giản
+            - Nêu khi nào nên dùng
+            - Nêu 2 lỗi học sinh hay nhầm
+            - Có 1 ví dụ ngắn
+            - Nếu có công thức thì viết bằng $...$
+            """
+            answer = ask_ai([
+                {"role": "system", "content": "Bạn là gia sư vật lí, giải thích ngắn gọn, rõ ràng."},
+                {"role": "user", "content": prompt}
+            ])
+            st.markdown(answer)
+
+    # ------------------------
+    # 3. RÚT BIẾN / BIẾN ĐỔI
+    # ------------------------
+    elif mode == "Rút biến / biến đổi":
+        formula_names = [item["name"] for item in FORMULA_DATA]
+        selected_name = st.selectbox("Chọn công thức cần biến đổi", formula_names, key="transform_formula")
+
+        formula = next(item for item in FORMULA_DATA if item["name"] == selected_name)
+
+        st.markdown("### Công thức gốc")
+        st.latex(formula["formula_latex"])
+
+        var_list = list(formula["variables"].keys())
+        target_var = st.selectbox("Chọn đại lượng cần rút", var_list)
+
+        st.markdown("### Các đại lượng trong công thức")
+        for var_name, var_meaning in formula["variables"].items():
+            st.write(f"- **{var_name}**: {var_meaning}")
+
+        if st.button("🔄 Rút biến bằng AI", key="derive_formula_ai"):
+            prompt = f"""
+            Hãy rút đại lượng {target_var} từ công thức {formula['formula_text']}.
+
+            Yêu cầu:
+            - Trình bày từng bước ngắn gọn
+            - Kết quả cuối cùng viết rõ
+            - Giải thích dễ hiểu cho học sinh THPT
+            - Nếu có công thức thì dùng $...$
+            """
+            answer = ask_ai([
+                {"role": "system", "content": "Bạn là giáo viên vật lí giỏi biến đổi công thức."},
+                {"role": "user", "content": prompt}
+            ])
+            st.markdown(answer)
+
+    # ------------------------
+    # 4. TÌM CÔNG THỨC THEO BÀI TOÁN
+    # ------------------------
+    elif mode == "Tìm công thức theo bài toán":
+        problem_text = st.text_area(
+            "Mô tả bài toán hoặc đại lượng cần tìm",
+            placeholder="Ví dụ: Tính cường độ dòng điện khi biết hiệu điện thế và điện trở"
+        )
+
+        st.caption("Bạn có thể nhập theo kiểu: 'tính gia tốc', 'tìm điện trở', 'bài con lắc đơn', 'tính nhiệt lượng'.")
+
+        # gợi ý nội bộ không cần AI
+        if problem_text.strip():
+            lower_problem = problem_text.lower()
+            matched = []
+
+            for item in FORMULA_DATA:
+                score = 0
+                for kw in item["keywords"]:
+                    if kw.lower() in lower_problem:
+                        score += 1
+                if score > 0:
+                    matched.append((score, item))
+
+            matched.sort(key=lambda x: x[0], reverse=True)
+
+            if matched:
+                st.markdown("### 📌 Gợi ý nhanh từ hệ thống")
+                for score, item in matched[:3]:
+                    st.write(f"**{item['name']}**")
+                    st.latex(item["formula_latex"])
+                    st.caption(f"Lý do gợi ý: khớp {score} từ khóa")
+            else:
+                st.info("Hệ thống chưa tìm được công thức phù hợp từ từ khóa. Bạn có thể dùng AI bên dưới.")
+
+        if st.button("🤖 AI chọn công thức phù hợp", key="suggest_formula_ai"):
+            if problem_text.strip():
+                summary_formulas = "\n".join([
+                    f"- {item['name']}: {item['formula_text']} | chương: {item['chapter']} | từ khóa: {', '.join(item['keywords'])}"
+                    for item in FORMULA_DATA
+                ])
+
+                prompt = f"""
+                Bạn là gia sư vật lí THPT.
+
+                Dựa trên mô tả bài toán của học sinh, hãy:
+                1. Chọn công thức phù hợp nhất
+                2. Giải thích vì sao chọn công thức đó
+                3. Nêu khi nào dùng được
+                4. Nêu 1 công thức dễ nhầm với nó
+                5. Cho 1 ví dụ rất ngắn
+
+                Mô tả bài toán:
+                {problem_text}
+
+                Danh sách công thức tham khảo:
+                {summary_formulas}
+
+                Nếu có công thức, hãy viết bằng $...$
+                """
+                answer = ask_ai([
+                    {"role": "system", "content": "Bạn là gia sư vật lí, trả lời rõ ràng, dễ hiểu."},
+                    {"role": "user", "content": prompt}
+                ])
+                st.markdown(answer)
+            else:
+                st.warning("Vui lòng nhập mô tả bài toán.")
 
 # ========================
 # TAB 7: LỊCH SỬ
