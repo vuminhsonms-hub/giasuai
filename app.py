@@ -113,7 +113,7 @@ with tabs[0]:
 # TAB 2: GIẢI BÀI (ĐÃ FIX LỖI HIỂN THỊ & LỊCH SỬ)
 # ========================
 with tabs[1]:
-    problem = st.text_area("Nhập bài tập", key="input_problem_tab2")
+    problem = st.text_area("Nhập bài tập 12", key="input_problem_tab2")
 
     col1, col2, col3 = st.columns(3)
     # Khởi tạo prompt_ai để tránh trùng tên với biến hệ thống
