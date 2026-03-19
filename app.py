@@ -111,48 +111,56 @@ with tabs[0]:
 # ========================
 # TAB 2: GIẢI BÀI
 # ========================
+# ========================
+# TAB 2: GIẢI BÀI (CHUYỂN [ ... ] → st.latex)
+# ========================
 with tabs[1]:
     problem = st.text_area("Nhập bài tập")
 
     col1, col2, col3 = st.columns(3)
-
     prompt = None
 
-    # Các nút gợi ý / bước 1 / giải đầy đủ
     if col1.button("💡 Gợi ý", key="hint"):
         prompt = f"Gợi ý cách làm: {problem}"
-
     if col2.button("🧩 Bước 1", key="step1"):
         prompt = f"Giải bước đầu tiên: {problem}"
-
     if col3.button("✅ Giải đầy đủ", key="full"):
         prompt = f"Giải chi tiết có công thức: {problem}"
 
     if prompt and problem.strip():
-        # Khởi tạo history nếu chưa có
         if "history" not in st.session_state:
             st.session_state.history = []
 
-        # Thêm câu hỏi vào lịch sử trước, đáp án sẽ update sau
+        # Thêm câu hỏi vào lịch sử
         st.session_state.history.append({"question": problem, "answer": ""})
 
-        # Gọi AI
         answer = ask_ai([
             {"role": "system",
              "content": "Gia sư vật lí, giải thích dễ hiểu, dùng $...$ cho công thức"},
             {"role": "user", "content": prompt}
         ])
 
-        # Chuyển tất cả công thức [ ... ] thành $...$ để hiển thị đúng
-        import re
-        answer = re.sub(r"\[\s*(.*?)\s*\]", r"$\1$", answer)
-
-        # Cập nhật đáp án vào lịch sử
+        # Lưu đáp án vào lịch sử
         st.session_state.history[-1]["answer"] = answer
 
-        # Hiển thị đáp án
-        st.markdown("**AI giải bài:**")
-        st.markdown(answer)
+        # Chia từng dòng
+        for line in answer.split("\n"):
+            # Nếu dòng chứa [ ... ], parse ra công thức LaTeX
+            import re
+            match = re.search(r"\[\s*(.*?)\s*\]", line)
+            if match:
+                st.latex(match.group(1))
+                # In phần text trước và sau công thức nếu có
+                text_before = line[:match.start()].strip()
+                text_after = line[match.end():].strip()
+                if text_before:
+                    st.write(text_before)
+                if text_after:
+                    st.write(text_after)
+            else:
+                # Không có công thức, in bình thường
+                if line.strip():
+                    st.write(line)
 # ========================
 # TAB 3: TRẮC NGHIỆM (ỔN ĐỊNH)
 # ========================
