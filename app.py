@@ -68,7 +68,7 @@ def ask_ai(messages):
 # ========================
 tabs = st.tabs([
     "🤖 Hỏi đáp",
-    "🧠 Giải bài",
+    "🧠 Giải bài 12",
     "📝 Trắc nghiệm",
     "🔬 Phòng thí nghiệm AI",
     "🧪 Mô phỏng",
