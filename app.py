@@ -109,33 +109,46 @@ with tabs[0]:
 
 
 # ========================
-# TAB 2: GIẢI BÀI
+# TAB 2: GIẢI BÀI (ĐÃ FIX LỖI HIỂN THỊ & LỊCH SỬ)
 # ========================
 with tabs[1]:
-    problem = st.text_area("Nhập bài tập")
+    problem = st.text_area("Nhập bài tập", key="input_problem_tab2")
 
     col1, col2, col3 = st.columns(3)
+    # Khởi tạo prompt_ai để tránh trùng tên với biến hệ thống
+    prompt_ai = None
 
-    prompt = None
+    if col1.button("💡 Gợi ý", key="hint_btn"):
+        prompt_ai = f"Gợi ý cách làm: {problem}"
+    if col2.button("🧩 Bước 1", key="step1_btn"):
+        prompt_ai = f"Giải bước đầu tiên: {problem}"
+    if col3.button("✅ Giải đầy đủ", key="full_btn"):
+        prompt_ai = f"Giải chi tiết có công thức: {problem}"
 
-    if col1.button("💡 Gợi ý", key="hint"):
-        prompt = f"Gợi ý cách làm: {problem}"
-
-    if col2.button("🧩 Bước 1", key="step1"):
-        prompt = f"Giải bước đầu tiên: {problem}"
-
-    if col3.button("✅ Giải đầy đủ", key="full"):
-        prompt = f"Giải chi tiết có công thức: {problem}"
-
-    if prompt and problem:
-        st.session_state.history.append(problem)
-
+    if prompt_ai and problem.strip():
+        # Áp dụng bộ quy tắc nghiêm ngặt giống hệt Tab Hỏi đáp
         answer = ask_ai([
-            {"role":"system","content":"Gia sư vật lí, giải thích dễ hiểu, dùng $...$ cho công thức"},
-            {"role":"user","content":prompt}
+            {"role": "system", "content": """
+                 Bạn là gia sư vật lí chuyên nghiệp.
+                 Quy tắc trình bày công thức:
+                 - Dùng $...$ cho công thức nằm cùng dòng.
+                 - Dùng $$...$$ cho công thức cần xuống dòng riêng biệt.
+                 - TUYỆT ĐỐI KHÔNG dùng ký hiệu \[ \] hoặc \( \) hoặc dấu ngoặc vuông đơn lẻ [ ] để bao quanh công thức.
+                 """},
+            {"role": "user", "content": prompt_ai}
         ])
 
-        st.markdown(answer)
+        # Bước bảo hiểm cuối cùng: Ép định dạng bằng code (nếu AI lỡ quên)
+        # Thay thế các biến thể ngoặc vuông/ngoặc đơn thành dấu $
+        clean_answer = answer.replace(r"\[", "$$").replace(r"\]", "$$").replace(r"\(", "$").replace(r"\)", "$")
+        
+        # Lưu vào history theo đúng định dạng dict để Tab 8 đọc được 
+        if "history" not in st.session_state:
+            st.session_state.history = []
+        st.session_state.history.append({"question": problem, "answer": clean_answer})
+
+        # Hiển thị kết quả sạch
+        st.markdown(clean_answer)
 
 # ========================
 # TAB 3: TRẮC NGHIỆM (ỔN ĐỊNH)
