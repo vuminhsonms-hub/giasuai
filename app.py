@@ -109,67 +109,40 @@ with tabs[0]:
 
 
 # ========================
-# TAB 2: GIẢI BÀI HOÀN CHỈNH
-# ========================
-# ========================
-# TAB 2: GIẢI BÀI HOÀN CHỈNH
+# TAB 2: GIẢI BÀI (ĐÃ SỬA LỖI HIỂN THỊ)
 # ========================
 with tabs[1]:
     problem = st.text_area("Nhập bài tập")
-
     col1, col2, col3 = st.columns(3)
     prompt = None
 
-    # Các nút Gợi ý / Bước 1 / Giải đầy đủ
     if col1.button("💡 Gợi ý", key="hint"):
         prompt = f"Gợi ý cách làm: {problem}"
     if col2.button("🧩 Bước 1", key="step1"):
         prompt = f"Giải bước đầu tiên: {problem}"
     if col3.button("✅ Giải đầy đủ", key="full"):
-        prompt = f"""Bạn là gia sư vật lí.
-Giải chi tiết bài tập: {problem}
-- Nếu có công thức, viết dưới dạng $...$
-- Không dùng [ ] hoặc \( \)
-- Viết từng bước, không lặp công thức
-- Mỗi bước một dòng
-"""
+        prompt = f"Giải chi tiết có công thức: {problem}"
 
-    if prompt and problem.strip():
-        # Khởi tạo history nếu chưa có
-        if "history" not in st.session_state:
-            st.session_state.history = []
-
-        # Thêm câu hỏi vào history
-        st.session_state.history.append({"question": problem, "answer": ""})
-
-        # Gọi AI
+    if prompt and problem:
+        # 1. Cấu hình Prompt chặt chẽ giống Tab Hỏi đáp
         answer = ask_ai([
-            {"role": "system",
-             "content": prompt},
-            {"role": "user", "content": "Hãy giải bài tập trên."}
+            {"role": "system", "content": """
+             Bạn là gia sư vật lí, giải thích dễ hiểu.
+             Yêu cầu bắt buộc về công thức:
+             - Chỉ dùng dạng $...$ cho mọi công thức.
+             - TUYỆT ĐỐI KHÔNG dùng \( \) hoặc \[ \].
+             """},
+            {"role": "user", "content": prompt}
         ])
 
-        # Lưu đáp án vào history
-        st.session_state.history[-1]["answer"] = answer
+        # 2. Bước dự phòng: Tự động thay thế nếu AI lỡ dùng sai định dạng
+        clean_answer = answer.replace("\[", "$").replace("\]", "$").replace("\(", "$").replace("\)", "$")
 
-        # Hiển thị output: render các công thức $...$ bằng st.latex
-        import re
-        pos = 0
-        for match in re.finditer(r"(\$.*?\$)", answer, flags=re.DOTALL):
-            # In text trước công thức
-            if match.start() > pos:
-                text_before = answer[pos:match.start()].strip()
-                if text_before:
-                    st.write(text_before)
-            # Render công thức
-            latex_code = match.group(1).strip("$")
-            st.latex(latex_code)
-            pos = match.end()
-        # In text cuối cùng sau công thức
-        if pos < len(answer):
-            text_after = answer[pos:].strip()
-            if text_after:
-                st.write(text_after)
+        # 3. Lưu vào lịch sử đúng cấu trúc (để Tab Lịch sử không bị lỗi)
+        st.session_state.history.append({"question": problem, "answer": clean_answer})
+
+        # 4. Hiển thị kết quả
+        st.markdown(clean_answer)
 
 # ========================
 # TAB 3: TRẮC NGHIỆM (ỔN ĐỊNH)
