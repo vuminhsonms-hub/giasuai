@@ -108,54 +108,13 @@ with tabs[0]:
 
 
 
-# ========================
-# TAB 2: GIẢI BÀI
-# ========================
-with tabs[1]:
-    problem = st.text_area("Nhập bài tập")
+Bây giờ, chúng ta tính giá trị bên trong căn:
 
-    col1, col2, col3 = st.columns(3)
-    prompt = None
+[ \frac{1}{9.81} \approx 0.1019 ]
 
-    if col1.button("💡 Gợi ý", key="hint"):
-        prompt = f"Gợi ý cách làm: {problem}"
-    if col2.button("🧩 Bước 1", key="step1"):
-        prompt = f"Giải bước đầu tiên: {problem}"
-    if col3.button("✅ Giải đầy đủ", key="full"):
-        prompt = f"Giải chi tiết có công thức: {problem}"
+Tiếp theo, tính căn bậc hai:
 
-    if prompt and problem.strip():
-        if "history" not in st.session_state:
-            st.session_state.history = []
-
-        # Thêm câu hỏi vào history
-        st.session_state.history.append({"question": problem, "answer": ""})
-
-        answer = ask_ai([
-            {"role": "system",
-             "content": "Gia sư vật lí, giải thích dễ hiểu, dùng $...$ cho công thức"},
-            {"role": "user", "content": prompt}
-        ])
-
-        # Lưu lại đáp án
-        st.session_state.history[-1]["answer"] = answer
-
-        import re
-        # Chia từng dòng
-        for line in answer.split("\n"):
-            # Nếu dòng chứa [ ... ], lấy công thức bên trong
-            matches = re.findall(r"\[\s*(.*?)\s*\]", line)
-            if matches:
-                # In text trước công thức (nếu có)
-                pre_text = re.sub(r"\[\s*.*?\s*\]", "", line).strip()
-                if pre_text:
-                    st.write(pre_text)
-                # Render từng công thức bằng st.latex
-                for m in matches:
-                    st.latex(m)
-            else:
-                # Dòng bình thường
-                st.write(line)
+[ \sqrt{0.1019} \approx 0.319 ]
 # ========================
 # TAB 3: TRẮC NGHIỆM (ỔN ĐỊNH)
 # ========================
