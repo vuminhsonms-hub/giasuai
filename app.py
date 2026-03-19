@@ -109,10 +109,11 @@ with tabs[0]:
 
 
 # ========================
-# TAB 2: GIẢI BÀI (ĐÃ SỬA LỖI HIỂN THỊ)
+# TAB 2: GIẢI BÀI (PHIÊN BẢN FIX LỖI HIỂN THỊ)
 # ========================
 with tabs[1]:
-    problem = st.text_area("Nhập bài tập")
+    problem = st.text_area("Nhập bài tập", key="input_problem")
+
     col1, col2, col3 = st.columns(3)
     prompt = None
 
@@ -124,25 +125,34 @@ with tabs[1]:
         prompt = f"Giải chi tiết có công thức: {problem}"
 
     if prompt and problem:
-        # 1. Cấu hình Prompt chặt chẽ giống Tab Hỏi đáp
+        # 1. Nâng cấp Prompt hệ thống để AI hiểu rõ yêu cầu
         answer = ask_ai([
-            {"role": "system", "content": """
-             Bạn là gia sư vật lí, giải thích dễ hiểu.
-             Yêu cầu bắt buộc về công thức:
-             - Chỉ dùng dạng $...$ cho mọi công thức.
-             - TUYỆT ĐỐI KHÔNG dùng \( \) hoặc \[ \].
-             """},
+            {"role": "system", "content": """Bạn là gia sư vật lí chuyên nghiệp. 
+            QUY TẮC HIỂN THỊ CÔNG THỨC:
+            - Dùng $...$ cho công thức nằm cùng dòng.
+            - Dùng $$...$$ cho công thức đứng riêng một dòng.
+            - TUYỆT ĐỐI KHÔNG dùng ký hiệu \[ \], \( \) hoặc các dấu ngoặc vuông đơn lẻ [ ] để bao quanh công thức.
+            """},
             {"role": "user", "content": prompt}
         ])
 
-        # 2. Bước dự phòng: Tự động thay thế nếu AI lỡ dùng sai định dạng
-        clean_answer = answer.replace("\[", "$").replace("\]", "$").replace("\(", "$").replace("\)", "$")
+        # 2. Bước "Hậu xử lý" - Ép định dạng bằng code Python (Bảo hiểm 100%)
+        # Thay thế các biến thể LaTeX mà AI hay dùng nhầm
+        fixed_answer = answer.replace(r"\[", "$$").replace(r"\]", "$$")
+        fixed_answer = fixed_answer.replace(r"\(", "$").replace(r"\)", "$")
+        
+        # Xử lý trường hợp AI dùng dấu ngoặc vuông đơn [ ] như bạn gặp phải
+        # Lưu ý: Chỉ thay thế nếu bên trong có các ký hiệu toán học đặc trưng (\frac, \sqrt, etc.)
+        import re
+        fixed_answer = re.sub(r'\[\s*(.*?\\frac.*?|.*?\\sqrt.*?|.*?\\approx.*?)\s*\]', r'$$\1$$', fixed_answer)
 
-        # 3. Lưu vào lịch sử đúng cấu trúc (để Tab Lịch sử không bị lỗi)
-        st.session_state.history.append({"question": problem, "answer": clean_answer})
+        # 3. Lưu vào lịch sử (Đã sửa lỗi cấu trúc tại )
+        if "history" not in st.session_state:
+            st.session_state.history = []
+        st.session_state.history.append({"question": problem, "answer": fixed_answer})
 
-        # 4. Hiển thị kết quả
-        st.markdown(clean_answer)
+        # 4. Hiển thị kết quả đã được làm sạch
+        st.markdown(fixed_answer)
 
 # ========================
 # TAB 3: TRẮC NGHIỆM (ỔN ĐỊNH)
