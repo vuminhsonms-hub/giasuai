@@ -864,39 +864,60 @@ def render_ai_math(text: str):
 
     text = text.strip()
 
-    # Chuẩn hóa latex AI trả về
+    # Chuẩn hóa một số kiểu AI hay trả về
     text = text.replace("\\[", "$$").replace("\\]", "$$")
     text = text.replace("\\(", "$").replace("\\)", "$")
-
-    # bỏ code block
-    text = text.replace("```latex", "")
-    text = text.replace("```tex", "")
-    text = text.replace("```", "")
-
+    text = text.replace("```latex", "").replace("```tex", "").replace("```", "")
     text = re.sub(r"\n{3,}", "\n\n", text)
 
     lines = text.split("\n")
-    new_lines = []
 
-    for line in lines:
-        line = line.strip()
+    for raw_line in lines:
+        line = raw_line.strip()
 
         if not line:
-            new_lines.append("")
+            st.write("")
             continue
 
-        if "$" in line:
-            new_lines.append(line)
+        # 1) Dòng dạng block latex: $$ ... $$
+        m_block = re.fullmatch(r"\$\$(.+?)\$\$", line)
+        if m_block:
+            formula = m_block.group(1).strip()
+            if formula:
+                st.latex(formula)
             continue
 
-        if "=" in line and len(line) < 80:
-            new_lines.append(f"$$ {line} $$")
-        else:
-            new_lines.append(line)
+        # 2) Dòng dạng inline latex toàn dòng: $ ... $
+        m_inline = re.fullmatch(r"\$(.+?)\$", line)
+        if m_inline:
+            formula = m_inline.group(1).strip()
+            if formula:
+                st.latex(formula)
+            continue
 
-    final_text = "\n\n".join(new_lines)
+        # 3) Dòng kiểu "=> $a = F/m$"
+        parts = re.split(r"(\$\$.*?\$\$|\$.*?\$)", line)
 
-    st.markdown(final_text)
+        if len(parts) > 1:
+            for part in parts:
+                part = part.strip()
+                if not part:
+                    continue
+
+                if part.startswith("$$") and part.endswith("$$"):
+                    formula = part[2:-2].strip()
+                    if formula:
+                        st.latex(formula)
+                elif part.startswith("$") and part.endswith("$"):
+                    formula = part[1:-1].strip()
+                    if formula:
+                        st.latex(formula)
+                else:
+                    st.markdown(part)
+            continue
+
+        # 4) Dòng text thường
+        st.markdown(line)
 
 
 # ========================
