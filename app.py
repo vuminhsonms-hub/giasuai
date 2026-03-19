@@ -118,6 +118,7 @@ with tabs[1]:
 
     prompt = None
 
+    # Các nút gợi ý / bước 1 / giải đầy đủ
     if col1.button("💡 Gợi ý", key="hint"):
         prompt = f"Gợi ý cách làm: {problem}"
 
@@ -127,16 +128,31 @@ with tabs[1]:
     if col3.button("✅ Giải đầy đủ", key="full"):
         prompt = f"Giải chi tiết có công thức: {problem}"
 
-    if prompt and problem:
-        st.session_state.history.append(problem)
+    if prompt and problem.strip():
+        # Khởi tạo history nếu chưa có
+        if "history" not in st.session_state:
+            st.session_state.history = []
 
+        # Thêm câu hỏi vào lịch sử trước, đáp án sẽ update sau
+        st.session_state.history.append({"question": problem, "answer": ""})
+
+        # Gọi AI
         answer = ask_ai([
-            {"role":"system","content":"Gia sư vật lí, giải thích dễ hiểu, dùng $...$ cho công thức"},
-            {"role":"user","content":prompt}
+            {"role": "system",
+             "content": "Gia sư vật lí, giải thích dễ hiểu, dùng $...$ cho công thức"},
+            {"role": "user", "content": prompt}
         ])
 
-        st.markdown(answer)
+        # Chuyển tất cả công thức [ ... ] thành $...$ để hiển thị đúng
+        import re
+        answer = re.sub(r"\[\s*(.*?)\s*\]", r"$\1$", answer)
 
+        # Cập nhật đáp án vào lịch sử
+        st.session_state.history[-1]["answer"] = answer
+
+        # Hiển thị đáp án
+        st.markdown("**AI giải bài:**")
+        st.markdown(answer)
 # ========================
 # TAB 3: TRẮC NGHIỆM (ỔN ĐỊNH)
 # ========================
