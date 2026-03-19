@@ -1449,13 +1449,6 @@ Bài làm học sinh:
 
 
 
-# ========================
-# TABS
-# ========================
-tabs = st.tabs([
-    "Hỏi đáp", "Giải bài", "Trắc nghiệm", "Thí nghiệm",
-    "Báo cáo", "Chấm bài", "Công thức", "Lịch sử"
-])
 
 
 # ========================
