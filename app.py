@@ -109,51 +109,47 @@ with tabs[0]:
 
 
 # ========================
-# TAB 2: GIẢI BÀI (PHIÊN BẢN FIX LỖI HIỂN THỊ)
+# ========================
+# TAB 2: GIẢI BÀI (ĐÃ FIX LỖI HIỂN THỊ & LỊCH SỬ)
 # ========================
 with tabs[1]:
-    problem = st.text_area("Nhập bài tập", key="input_problem")
+    problem = st.text_area("Nhập bài tập", key="input_problem_tab2")
 
     col1, col2, col3 = st.columns(3)
-    prompt = None
+    # Khởi tạo prompt_ai để tránh trùng tên với biến hệ thống
+    prompt_ai = None
 
-    if col1.button("💡 Gợi ý", key="hint"):
-        prompt = f"Gợi ý cách làm: {problem}"
-    if col2.button("🧩 Bước 1", key="step1"):
-        prompt = f"Giải bước đầu tiên: {problem}"
-    if col3.button("✅ Giải đầy đủ", key="full"):
-        prompt = f"Giải chi tiết có công thức: {problem}"
+    if col1.button("💡 Gợi ý", key="hint_btn"):
+        prompt_ai = f"Gợi ý cách làm: {problem}"
+    if col2.button("🧩 Bước 1", key="step1_btn"):
+        prompt_ai = f"Giải bước đầu tiên: {problem}"
+    if col3.button("✅ Giải đầy đủ", key="full_btn"):
+        prompt_ai = f"Giải chi tiết có công thức: {problem}"
 
-    if prompt and problem:
-        # 1. Nâng cấp Prompt hệ thống để AI hiểu rõ yêu cầu
+    if prompt_ai and problem.strip():
+        # Áp dụng bộ quy tắc nghiêm ngặt giống hệt Tab Hỏi đáp
         answer = ask_ai([
-            {"role": "system", "content": """Bạn là gia sư vật lí chuyên nghiệp. 
-            QUY TẮC HIỂN THỊ CÔNG THỨC:
-            - Dùng $...$ cho công thức nằm cùng dòng.
-            - Dùng $$...$$ cho công thức đứng riêng một dòng.
-            - TUYỆT ĐỐI KHÔNG dùng ký hiệu \[ \], \( \) hoặc các dấu ngoặc vuông đơn lẻ [ ] để bao quanh công thức.
-            """},
-            {"role": "user", "content": prompt}
+            {"role": "system", "content": """
+                 Bạn là gia sư vật lí chuyên nghiệp.
+                 Quy tắc trình bày công thức:
+                 - Dùng $...$ cho công thức nằm cùng dòng.
+                 - Dùng $$...$$ cho công thức cần xuống dòng riêng biệt.
+                 - TUYỆT ĐỐI KHÔNG dùng ký hiệu \[ \] hoặc \( \) hoặc dấu ngoặc vuông đơn lẻ [ ] để bao quanh công thức.
+                 """},
+            {"role": "user", "content": prompt_ai}
         ])
 
-        # 2. Bước "Hậu xử lý" - Ép định dạng bằng code Python (Bảo hiểm 100%)
-        # Thay thế các biến thể LaTeX mà AI hay dùng nhầm
-        fixed_answer = answer.replace(r"\[", "$$").replace(r"\]", "$$")
-        fixed_answer = fixed_answer.replace(r"\(", "$").replace(r"\)", "$")
+        # Bước bảo hiểm cuối cùng: Ép định dạng bằng code (nếu AI lỡ quên)
+        # Thay thế các biến thể ngoặc vuông/ngoặc đơn thành dấu $
+        clean_answer = answer.replace(r"\[", "$$").replace(r"\]", "$$").replace(r"\(", "$").replace(r"\)", "$")
         
-        # Xử lý trường hợp AI dùng dấu ngoặc vuông đơn [ ] như bạn gặp phải
-        # Lưu ý: Chỉ thay thế nếu bên trong có các ký hiệu toán học đặc trưng (\frac, \sqrt, etc.)
-        import re
-        fixed_answer = re.sub(r'\[\s*(.*?\\frac.*?|.*?\\sqrt.*?|.*?\\approx.*?)\s*\]', r'$$\1$$', fixed_answer)
-
-        # 3. Lưu vào lịch sử (Đã sửa lỗi cấu trúc tại )
+        # Lưu vào history theo đúng định dạng dict để Tab 8 đọc được 
         if "history" not in st.session_state:
             st.session_state.history = []
-        st.session_state.history.append({"question": problem, "answer": fixed_answer})
+        st.session_state.history.append({"question": problem, "answer": clean_answer})
 
-        # 4. Hiển thị kết quả đã được làm sạch
-        st.markdown(fixed_answer)
-
+        # Hiển thị kết quả sạch
+        st.markdown(clean_answer)
 # ========================
 # TAB 3: TRẮC NGHIỆM (ỔN ĐỊNH)
 # ========================
