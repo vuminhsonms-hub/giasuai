@@ -108,13 +108,59 @@ with tabs[0]:
 
 
 
-Bây giờ, chúng ta tính giá trị bên trong căn:
+# ========================
+# TAB 2: GIẢI BÀI HOÀN CHỈNH
+# ========================
+with tabs[1]:
+    problem = st.text_area("Nhập bài tập")
 
-[ \frac{1}{9.81} \approx 0.1019 ]
+    col1, col2, col3 = st.columns(3)
+    prompt = None
 
-Tiếp theo, tính căn bậc hai:
+    if col1.button("💡 Gợi ý", key="hint"):
+        prompt = f"Gợi ý cách làm: {problem}"
+    if col2.button("🧩 Bước 1", key="step1"):
+        prompt = f"Giải bước đầu tiên: {problem}"
+    if col3.button("✅ Giải đầy đủ", key="full"):
+        prompt = f"Giải chi tiết bài tập: {problem}. Nếu có công thức, viết dạng $...$, mỗi bước trên một dòng, không lặp công thức."
 
-[ \sqrt{0.1019} \approx 0.319 ]
+    if prompt and problem.strip():
+        # Khởi tạo history nếu chưa có
+        if "history" not in st.session_state:
+            st.session_state.history = []
+
+        # Thêm câu hỏi vào history
+        st.session_state.history.append({"question": problem, "answer": ""})
+
+        # Gọi AI
+        answer = ask_ai([
+            {"role": "system",
+             "content": "Bạn là gia sư vật lí, giải thích dễ hiểu, dùng $...$ cho công thức."},
+            {"role": "user", "content": prompt}
+        ])
+
+        # Lưu đáp án vào history
+        st.session_state.history[-1]["answer"] = answer
+
+        # Xử lý và hiển thị: tách $...$ và text bình thường
+        import re
+        pos = 0
+        for match in re.finditer(r"(\$.*?\$)", answer, flags=re.DOTALL):
+            # In text trước công thức (nếu có)
+            if match.start() > pos:
+                text_before = answer[pos:match.start()].strip()
+                if text_before:
+                    st.write(text_before)
+            # Render công thức
+            latex_code = match.group(1).strip("$")
+            st.latex(latex_code)
+            pos = match.end()
+        # In text cuối cùng sau công thức (nếu có)
+        if pos < len(answer):
+            text_after = answer[pos:].strip()
+            if text_after:
+                st.write(text_after)
+
 # ========================
 # TAB 3: TRẮC NGHIỆM (ỔN ĐỊNH)
 # ========================
